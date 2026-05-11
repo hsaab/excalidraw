@@ -15,6 +15,7 @@ import {
 } from "./utils";
 
 import { elementCenterPoint } from "./bounds";
+import { deconstructHeartElement } from "./heart";
 
 import type {
   ElementsMap,
@@ -22,6 +23,7 @@ import type {
   ExcalidrawElement,
   ExcalidrawEllipseElement,
   ExcalidrawFreeDrawElement,
+  ExcalidrawHeartElement,
   ExcalidrawLinearElement,
   ExcalidrawRectanguloidElement,
 } from "./types";
@@ -45,6 +47,8 @@ export const distanceToElement = (
       return distanceToDiamondElement(element, elementsMap, p);
     case "ellipse":
       return distanceToEllipseElement(element, elementsMap, p);
+    case "heart":
+      return distanceToHeartElement(element, elementsMap, p);
     case "line":
     case "arrow":
     case "freedraw":
@@ -128,6 +132,22 @@ const distanceToEllipseElement = (
     // Instead of rotating the ellipse, rotate the point to the inverse angle
     pointRotateRads(p, center, -element.angle as Radians),
     ellipse(center, element.width / 2, element.height / 2),
+  );
+};
+
+const distanceToHeartElement = (
+  element: ExcalidrawHeartElement,
+  elementsMap: ElementsMap,
+  p: GlobalPoint,
+): number => {
+  const center = elementCenterPoint(element, elementsMap);
+  const rotatedPoint = pointRotateRads(p, center, -element.angle as Radians);
+  const [, curves] = deconstructHeartElement(element);
+
+  return Math.min(
+    ...curves
+      .map((heartCurve) => curvePointDistance(heartCurve, rotatedPoint))
+      .filter((distance): distance is number => distance !== null),
   );
 };
 

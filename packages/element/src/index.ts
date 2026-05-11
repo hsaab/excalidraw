@@ -75,6 +75,7 @@ export * from "./fractionalIndex";
 export * from "./frame";
 export * from "./groups";
 export * from "./heading";
+export * from "./heart";
 export * from "./image";
 export * from "./linearElementEditor";
 export * from "./mutateElement";

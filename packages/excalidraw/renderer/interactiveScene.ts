@@ -22,6 +22,7 @@ import {
 
 import {
   deconstructDiamondElement,
+  deconstructHeartElement,
   deconstructRectanguloidElement,
   elementCenterPoint,
   getDiamondBaseCorners,
@@ -365,6 +366,32 @@ const renderBindingHighlightForBindableElement_simple = (
           }
 
           break;
+        case "heart":
+          {
+            const [, curves] = deconstructHeartElement(
+              suggestedBinding.element,
+            );
+
+            curves.forEach((curve) => {
+              const [start, control1, control2, end] = curve;
+              context.beginPath();
+              context.moveTo(
+                start[0] - suggestedBinding.element.x,
+                start[1] - suggestedBinding.element.y,
+              );
+              context.bezierCurveTo(
+                control1[0] - suggestedBinding.element.x,
+                control1[1] - suggestedBinding.element.y,
+                control2[0] - suggestedBinding.element.x,
+                control2[1] - suggestedBinding.element.y,
+                end[0] - suggestedBinding.element.x,
+                end[1] - suggestedBinding.element.y,
+              );
+              context.stroke();
+            });
+          }
+
+          break;
         default:
           {
             const [segments, curves] = deconstructRectanguloidElement(
@@ -687,6 +714,30 @@ const renderBindingHighlightForBindableElement_complex = (
             });
 
             // Draw each curve individually (for rounded corners)
+            curves.forEach((curve) => {
+              const [start, control1, control2, end] = curve;
+              context.beginPath();
+              context.moveTo(
+                start[0] - element.x + offset,
+                start[1] - element.y + offset,
+              );
+              context.bezierCurveTo(
+                control1[0] - element.x + offset,
+                control1[1] - element.y + offset,
+                control2[0] - element.x + offset,
+                control2[1] - element.y + offset,
+                end[0] - element.x + offset,
+                end[1] - element.y + offset,
+              );
+              context.stroke();
+            });
+          }
+
+          break;
+        case "heart":
+          {
+            const [, curves] = deconstructHeartElement(element, offset);
+
             curves.forEach((curve) => {
               const [start, control1, control2, end] = curve;
               context.beginPath();

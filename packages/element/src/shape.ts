@@ -63,6 +63,7 @@ import {
   getElementAbsoluteCoords,
 } from "./bounds";
 import { shouldTestInside } from "./collision";
+import { getHeartPath, getHeartShape } from "./heart";
 
 import type {
   ExcalidrawElement,
@@ -230,7 +231,8 @@ export const generateRoughOptions = (
     case "iframe":
     case "embeddable":
     case "diamond":
-    case "ellipse": {
+    case "ellipse":
+    case "heart": {
       options.fillStyle = element.fillStyle;
       options.fill = isTransparent(element.backgroundColor)
         ? undefined
@@ -875,6 +877,13 @@ const _generateElementShape = (
       );
       return shape;
     }
+    case "heart": {
+      const shape: ElementShapes[typeof element.type] = generator.path(
+        getHeartPath(element.width, element.height),
+        generateRoughOptions(element, true, isDarkMode),
+      );
+      return shape;
+    }
     case "line":
     case "arrow": {
       let shape: ElementShapes[typeof element.type];
@@ -1111,6 +1120,9 @@ export const getElementShape = <Point extends GlobalPoint | LocalPoint>(
 
     case "ellipse":
       return getEllipseShape(element);
+
+    case "heart":
+      return getHeartShape(element);
 
     case "freedraw": {
       const [, , , , cx, cy] = getElementAbsoluteCoords(element, elementsMap);

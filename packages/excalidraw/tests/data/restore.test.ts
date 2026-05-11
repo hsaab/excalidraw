@@ -43,6 +43,34 @@ describe("restoreElements", () => {
     expect(restoredElements.length).toBe(elements.length);
   });
 
+  it("should restore heart as a generic element", () => {
+    const heartElement = API.createElement({
+      type: "heart",
+      id: "id-heart01",
+      x: 10,
+      y: 20,
+      width: 80,
+      height: 70,
+    });
+
+    const restoredHeart = restore.restoreElements(
+      [heartElement],
+      null,
+    )[0] as ExcalidrawElement;
+
+    expect(restoredHeart).toEqual(
+      expect.objectContaining({
+        id: "id-heart01",
+        type: "heart",
+        x: 10,
+        y: 20,
+        width: 80,
+        height: 70,
+      }),
+    );
+    expect("points" in restoredHeart).toBe(false);
+  });
+
   it("when imported data state is null it should return an empty array of elements", () => {
     const restoredElements = restore.restoreElements(null, null);
     expect(restoredElements.length).toBe(0);

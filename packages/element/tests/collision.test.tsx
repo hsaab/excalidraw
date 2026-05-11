@@ -8,6 +8,11 @@ import { render } from "@excalidraw/excalidraw/tests/test-utils";
 
 import * as distance from "../src/distance";
 import { hitElementItself } from "../src/collision";
+import {
+  HEART_CUBIC_SEGMENTS,
+  HEART_START_POINT,
+  getHeartPath,
+} from "../src/heart";
 
 describe("check rotated elements can be hit:", () => {
   beforeEach(async () => {
@@ -216,5 +221,64 @@ describe("hitElementItself cache", () => {
         overrideShouldTestInside: true,
       }),
     ).toBe(true);
+  });
+});
+
+describe("heart element geometry", () => {
+  it("hit tests heart fill and outline", () => {
+    const element = API.createElement({
+      type: "heart",
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+      backgroundColor: "#ffffff",
+    });
+    const elementsMap = arrayToMap([element]);
+
+    expect(
+      hitElementItself({
+        point: pointFrom<GlobalPoint>(55, 65),
+        element,
+        threshold: 1,
+        elementsMap,
+      }),
+    ).toBe(true);
+    expect(
+      hitElementItself({
+        point: pointFrom<GlobalPoint>(50, 96),
+        element,
+        threshold: 2,
+        elementsMap,
+      }),
+    ).toBe(true);
+    expect(
+      hitElementItself({
+        point: pointFrom<GlobalPoint>(50, 10),
+        element,
+        threshold: 1,
+        elementsMap,
+      }),
+    ).toBe(false);
+  });
+
+  it("uses a closed cubic outline without straight segments", () => {
+    let currentPoint = HEART_START_POINT;
+
+    for (const [
+      controlPoint1,
+      controlPoint2,
+      endPoint,
+    ] of HEART_CUBIC_SEGMENTS) {
+      expect(controlPoint1).not.toEqual(currentPoint);
+      expect(controlPoint2).not.toEqual(endPoint);
+      currentPoint = endPoint;
+    }
+
+    expect(currentPoint).toBe(HEART_START_POINT);
+
+    const path = getHeartPath(100, 100);
+    expect(path.match(/\bC\b/g)).toHaveLength(HEART_CUBIC_SEGMENTS.length);
+    expect(path).not.toMatch(/\b[QL]\b/);
   });
 });
