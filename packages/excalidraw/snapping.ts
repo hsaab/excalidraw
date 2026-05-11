@@ -235,7 +235,9 @@ export const getElementsCorners = (
     const halfHeight = (y2 - y1) / 2;
 
     if (
-      (element.type === "diamond" || element.type === "ellipse") &&
+      (element.type === "diamond" ||
+        element.type === "ellipse" ||
+        element.type === "heart") &&
       !boundingBoxCorners
     ) {
       const leftMid = pointRotateRads<GlobalPoint>(

@@ -52,6 +52,7 @@ import {
   deconstructLinearOrFreeDrawElement,
   deconstructRectanguloidElement,
 } from "./utils";
+import { deconstructHeartElement } from "./heart";
 
 import { getBoundTextElement } from "./textElement";
 
@@ -71,6 +72,7 @@ import type {
   ExcalidrawElement,
   ExcalidrawEllipseElement,
   ExcalidrawFreeDrawElement,
+  ExcalidrawHeartElement,
   ExcalidrawLinearElement,
   ExcalidrawRectanguloidElement,
   NonDeleted,
@@ -478,6 +480,14 @@ export const intersectElementWithLineSegment = (
         line,
         offset,
       );
+    case "heart":
+      return intersectHeartWithLineSegment(
+        element,
+        elementsMap,
+        line,
+        offset,
+        onlyFirst,
+      );
     case "line":
     case "freedraw":
     case "arrow":
@@ -729,6 +739,37 @@ const intersectEllipseWithLineSegment = (
     ellipse(center, element.width / 2 + offset, element.height / 2 + offset),
     lineSegment(rotatedA, rotatedB),
   ).map((p) => pointRotateRads(p, center, element.angle));
+};
+
+const intersectHeartWithLineSegment = (
+  element: ExcalidrawHeartElement,
+  elementsMap: ElementsMap,
+  segment: LineSegment<GlobalPoint>,
+  offset: number = 0,
+  onlyFirst = false,
+): GlobalPoint[] => {
+  const center = elementCenterPoint(element, elementsMap);
+  const rotatedA = pointRotateRads(
+    segment[0],
+    center,
+    -element.angle as Radians,
+  );
+  const rotatedB = pointRotateRads(
+    segment[1],
+    center,
+    -element.angle as Radians,
+  );
+  const rotatedIntersector = lineSegment(rotatedA, rotatedB);
+  const [, curves] = deconstructHeartElement(element, offset);
+
+  return curveIntersections(
+    curves,
+    rotatedIntersector,
+    [],
+    center,
+    element.angle,
+    onlyFirst,
+  );
 };
 
 /**

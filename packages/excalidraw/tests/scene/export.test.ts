@@ -192,6 +192,32 @@ describe("exportToSvg", () => {
     );
     expect(svgElement.innerHTML).toMatchSnapshot();
   });
+
+  it("exports heart as a cubic SVG path", async () => {
+    const heart = API.createElement({
+      type: "heart",
+      id: "id-heart-svg",
+      width: ELEMENT_WIDTH,
+      height: ELEMENT_HEIGHT,
+      roughness: 0,
+      backgroundColor: "#ffffff",
+      index: "a0" as FractionalIndex,
+    }) as NonDeletedExcalidrawElement;
+
+    const svgElement = await exportUtils.exportToSvg(
+      [heart],
+      DEFAULT_OPTIONS,
+      null,
+    );
+    const paths = Array.from(
+      svgElement.querySelectorAll('[data-id="id-heart-svg"] path'),
+    );
+
+    expect(paths.length).toBeGreaterThan(0);
+    expect(
+      paths.some((path) => /[Cc]/.test(path.getAttribute("d") ?? "")),
+    ).toBe(true);
+  });
 });
 
 describe("exporting frames", () => {

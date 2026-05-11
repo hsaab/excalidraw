@@ -4,7 +4,7 @@ import { resolvablePromise } from "@excalidraw/common";
 
 import { Excalidraw } from "../index";
 
-import { getToolbarTools } from "../components/shapes";
+import { findShapeByKey, getToolbarTools } from "../components/shapes";
 
 import { Pointer } from "./helpers/ui";
 import { act, render } from "./test-utils";
@@ -46,6 +46,28 @@ describe("setActiveTool()", () => {
     expect(h.state.activeTool.type).toBe("selection");
   });
 
+  it("should create heart as a generic element", async () => {
+    act(() => {
+      excalidrawAPI.setActiveTool({ type: "heart" });
+    });
+
+    mouse.down(10, 10);
+    mouse.up(60, 60);
+
+    expect(h.elements[0].type).toBe("heart");
+
+    act(() => {
+      excalidrawAPI.setActiveTool({ type: "rectangle" });
+    });
+
+    mouse.down(70, 70);
+    mouse.up(120, 120);
+
+    expect(Object.keys(h.elements[0]).sort()).toEqual(
+      Object.keys(h.elements[1]).sort(),
+    );
+  });
+
   it("should support tool locking", async () => {
     expect(h.state.activeTool.type).toBe("selection");
     act(() => {
@@ -83,6 +105,7 @@ describe("getToolbarTools()", () => {
 
     expect(toolValues.filter((value) => value === "selection")).toHaveLength(1);
     expect(toolValues.filter((value) => value === "lasso")).toHaveLength(0);
+    expect(toolValues).toContain("heart");
   });
 
   it("replaces selection with lasso when lasso is preferred", () => {
@@ -90,5 +113,18 @@ describe("getToolbarTools()", () => {
 
     expect(toolValues.filter((value) => value === "lasso")).toHaveLength(1);
     expect(toolValues.filter((value) => value === "selection")).toHaveLength(0);
+  });
+
+  it("maps heart and eraser shortcuts", () => {
+    const app = {
+      state: {
+        preferredSelectionTool: {
+          type: "selection",
+        },
+      },
+    } as AppClassProperties;
+
+    expect(findShapeByKey("0", app)).toBe("heart");
+    expect(findShapeByKey("e", app)).toBe("eraser");
   });
 });

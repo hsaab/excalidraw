@@ -53,6 +53,7 @@ import {
   deconstructDiamondElement,
   deconstructRectanguloidElement,
 } from "./utils";
+import { deconstructHeartElement } from "./heart";
 
 import type { Drawable, Op } from "roughjs/bin/core";
 import type { Point as RoughPoint } from "roughjs/bin/geometry";
@@ -363,6 +364,14 @@ export const getElementLineSegments = (
     return [...rotatedSides, ...cornerSegments];
   } else if (element.type === "diamond") {
     const [sides, corners] = deconstructDiamondElement(element);
+    const cornerSegments = corners
+      .map((corner) => getSegmentsOnCurve(corner, center, element.angle))
+      .flat();
+    const rotatedSides = getRotatedSides(sides, center, element.angle);
+
+    return [...rotatedSides, ...cornerSegments];
+  } else if (element.type === "heart") {
+    const [sides, corners] = deconstructHeartElement(element);
     const cornerSegments = corners
       .map((corner) => getSegmentsOnCurve(corner, center, element.angle))
       .flat();
