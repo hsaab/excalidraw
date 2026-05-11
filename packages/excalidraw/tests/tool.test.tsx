@@ -124,7 +124,35 @@ describe("getToolbarTools()", () => {
       },
     } as AppClassProperties;
 
-    expect(findShapeByKey("0", app)).toBe("heart");
+    expect(findShapeByKey("5", app)).toBe("heart");
+    expect(findShapeByKey("0", app)).toBe("image");
     expect(findShapeByKey("e", app)).toBe("eraser");
+  });
+
+  it("keeps numeric shortcuts aligned with toolbar order", () => {
+    const app = {
+      state: {
+        preferredSelectionTool: {
+          type: "selection",
+        },
+      },
+    } as AppClassProperties;
+
+    const numberedToolbarTools = getToolbarTools(app)
+      .filter((tool) => tool.toolbar && tool.numericKey != null)
+      .map((tool) => [tool.value, tool.numericKey]);
+
+    expect(numberedToolbarTools).toEqual([
+      ["selection", "1"],
+      ["rectangle", "2"],
+      ["diamond", "3"],
+      ["ellipse", "4"],
+      ["heart", "5"],
+      ["arrow", "6"],
+      ["line", "7"],
+      ["freedraw", "8"],
+      ["text", "9"],
+      ["image", "0"],
+    ]);
   });
 });
