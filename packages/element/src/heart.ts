@@ -41,11 +41,7 @@ export const HEART_CUBIC_SEGMENTS: readonly HeartSegment[] = [
     [0.98, 0.62],
     [0.92, 0.32],
   ],
-  [
-    [0.88, 0.02],
-    [0.56, 0.08],
-    HEART_START_POINT,
-  ],
+  [[0.88, 0.02], [0.56, 0.08], HEART_START_POINT],
 ];
 
 const getSafeDimension = (dimension: number) => dimension || 1;
@@ -70,7 +66,9 @@ export const getHeartPath = (width: number, height: number) => {
     const cp1 = mapHeartPoint<LocalPoint>(controlPoint1, width, height);
     const cp2 = mapHeartPoint<LocalPoint>(controlPoint2, width, height);
     const end = mapHeartPoint<LocalPoint>(endPoint, width, height);
-    path.push(`C ${cp1[0]} ${cp1[1]}, ${cp2[0]} ${cp2[1]}, ${end[0]} ${end[1]}`);
+    path.push(
+      `C ${cp1[0]} ${cp1[1]}, ${cp2[0]} ${cp2[1]}, ${end[0]} ${end[1]}`,
+    );
   }
 
   return path.join(" ");
@@ -87,36 +85,38 @@ const getHeartBaseCurves = (
     element.y,
   );
 
-  return HEART_CUBIC_SEGMENTS.map(([controlPoint1, controlPoint2, endPoint]) => {
-    const end = mapHeartPoint<GlobalPoint>(
-      endPoint,
-      element.width,
-      element.height,
-      element.x,
-      element.y,
-    );
-    const segment = curve<GlobalPoint>(
-      start,
-      mapHeartPoint<GlobalPoint>(
-        controlPoint1,
+  return HEART_CUBIC_SEGMENTS.map(
+    ([controlPoint1, controlPoint2, endPoint]) => {
+      const end = mapHeartPoint<GlobalPoint>(
+        endPoint,
         element.width,
         element.height,
         element.x,
         element.y,
-      ),
-      mapHeartPoint<GlobalPoint>(
-        controlPoint2,
-        element.width,
-        element.height,
-        element.x,
-        element.y,
-      ),
-      end,
-    );
+      );
+      const segment = curve<GlobalPoint>(
+        start,
+        mapHeartPoint<GlobalPoint>(
+          controlPoint1,
+          element.width,
+          element.height,
+          element.x,
+          element.y,
+        ),
+        mapHeartPoint<GlobalPoint>(
+          controlPoint2,
+          element.width,
+          element.height,
+          element.x,
+          element.y,
+        ),
+        end,
+      );
 
-    start = end;
-    return segment;
-  });
+      start = end;
+      return segment;
+    },
+  );
 };
 
 export const deconstructHeartElement = (

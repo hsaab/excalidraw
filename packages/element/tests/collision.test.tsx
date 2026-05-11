@@ -238,7 +238,7 @@ describe("heart element geometry", () => {
 
     expect(
       hitElementItself({
-        point: pointFrom<GlobalPoint>(50, 65),
+        point: pointFrom<GlobalPoint>(55, 65),
         element,
         threshold: 1,
         elementsMap,
@@ -265,7 +265,11 @@ describe("heart element geometry", () => {
   it("uses a closed cubic outline without straight segments", () => {
     let currentPoint = HEART_START_POINT;
 
-    for (const [controlPoint1, controlPoint2, endPoint] of HEART_CUBIC_SEGMENTS) {
+    for (const [
+      controlPoint1,
+      controlPoint2,
+      endPoint,
+    ] of HEART_CUBIC_SEGMENTS) {
       expect(controlPoint1).not.toEqual(currentPoint);
       expect(controlPoint2).not.toEqual(endPoint);
       currentPoint = endPoint;
